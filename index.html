@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowLab : Level of Service Monitor</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <h1>FlowLab : Level of Service Monitor</h1>
+    <div class="subtitle" id="subtitle-text">Loading data…</div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+    <div class="sum-badge"><span class="sum-dot" style="background:#00c853"></span><span id="sum-A" class="sum-count">—</span><span class="sum-grade">A</span></div>
+    <div class="sum-badge"><span class="sum-dot" style="background:#7ecb20"></span><span id="sum-B" class="sum-count">—</span><span class="sum-grade">B</span></div>
+    <div class="sum-badge"><span class="sum-dot" style="background:#ffd600"></span><span id="sum-C" class="sum-count">—</span><span class="sum-grade">C</span></div>
+    <div class="sum-badge"><span class="sum-dot" style="background:#ff9100"></span><span id="sum-D" class="sum-count">—</span><span class="sum-grade">D</span></div>
+    <div class="sum-badge"><span class="sum-dot" style="background:#ff3d00"></span><span id="sum-E" class="sum-count">—</span><span class="sum-grade">E</span></div>
+    <div class="sum-badge"><span class="sum-dot" style="background:#b71c1c"></span><span id="sum-F" class="sum-count">—</span><span class="sum-grade">F</span></div>
+    <div id="upload-wrap">
+      <button id="btn-upload" onclick="document.getElementById('file-input').click()" title="Upload new .xlsx or .geojson">⬆ Upload Data</button>
+      <input type="file" id="file-input" accept=".xlsx,.geojson,.json" style="display:none" onchange="handleUpload(this)">
+    </div>
+    <div id="upload-status"></div>
+  </div>
+</div>
+
+<!-- Main content row: left panel | map | right panel -->
+<div id="main-row">
+
+  <!-- Left: Road Statistics -->
+  <div id="side-panel">
+    <div id="side-header">
+      <span>Road Statistics</span>
+      <span id="side-hour-label" style="color:#8b949e;font-size:10px;font-weight:400;">12:00 AM</span>
+    </div>
+    <div id="road-list"></div>
+  </div>
+
+  <!-- Centre: Map -->
+  <div style="position:relative;flex:1;overflow:hidden;">
+    <div id="map"></div>
+
+    <div id="legend">
+      <h3>Level of Service</h3>
+      <div class="los-item"><div class="los-swatch" style="background:#00c853"></div><span class="los-grade" style="color:#00c853">A</span><span class="los-label">Free Flow &nbsp;(V/C ≤ 0.60)</span></div>
+      <div class="los-item"><div class="los-swatch" style="background:#7ecb20"></div><span class="los-grade" style="color:#7ecb20">B</span><span class="los-label">Reasonable &nbsp;(≤ 0.70)</span></div>
+      <div class="los-item"><div class="los-swatch" style="background:#ffd600"></div><span class="los-grade" style="color:#ffd600">C</span><span class="los-label">Stable Flow &nbsp;(≤ 0.80)</span></div>
+      <div class="los-item"><div class="los-swatch" style="background:#ff9100"></div><span class="los-grade" style="color:#ff9100">D</span><span class="los-label">Near Capacity &nbsp;(≤ 0.90)</span></div>
+      <div class="los-item"><div class="los-swatch" style="background:#ff3d00"></div><span class="los-grade" style="color:#ff3d00">E</span><span class="los-label">At Capacity &nbsp;(≤ 1.00)</span></div>
+      <div class="los-item"><div class="los-swatch" style="background:#b71c1c"></div><span class="los-grade" style="color:#b71c1c">F</span><span class="los-label">Over Capacity &nbsp;(&gt; 1.00)</span></div>
+      <div style="border-top:1px solid #30363d;margin-top:8px;padding-top:8px;">
+        <div style="font-size:10px;color:#484f58;">Line thickness = total vehicle volume</div>
+        <div style="font-size:10px;color:#484f58;margin-top:3px;">Click a road for details</div>
+      </div>
+    </div>
+
+
+    <div id="peak-panel">
+      <div id="peak-header">Peak Hour Detection</div>
+      <div id="peak-list"></div>
+    </div>
+
+
+    <div id="tile-status">⚠ Map tiles unavailable — roads still visible</div>
+
+    <div id="loading-overlay">
+      <div id="loading-box">
+        <div id="loading-spinner"></div>
+        <div id="loading-text">Loading traffic data…</div>
+      </div>
+    </div>
+  </div>
+
+
+</div><!-- end #main-row -->
+
+<div id="bottom-panel">
+  <div id="time-display">
+    <div id="current-time">12:00 AM</div>
+    <div id="play-controls">
+      <span id="speed-label">Speed:</span>
+      <button id="btn-slow"   onclick="setSpeed(1500)">0.5×</button>
+      <button id="btn-norm"   onclick="setSpeed(800)"  class="active">1×</button>
+      <button id="btn-fast"   onclick="setSpeed(300)">2×</button>
+      <button id="btn-faster" onclick="setSpeed(100)">4×</button>
+      &nbsp;
+      <button onclick="stepHour(-1)">◀</button>
+      <button id="btn-play" onclick="togglePlay()">▶ Play</button>
+      <button onclick="stepHour(1)">▶</button>
+    </div>
+  </div>
+  <div>
+    <input type="range" id="hour-slider" min="0" max="23" value="0" oninput="onSlider(this.value)">
+    <div id="tick-labels"></div>
+  </div>
+</div>
+
+<script src="/static/js/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+app.py
+The brain of the whole operation. It's the Flask server that keeps everything running. It does three things: serves the dashboard when you open localhost:5000 in your browser, provides the /api/traffic-data endpoint that sends your processed data to the frontend, and handles the /api/upload endpoint when you use the upload button. This is the file you run with python app.py.
+
+pipeline/process_data.py
+This is your original generate_map.py logic, but stripped of all the HTML generation. It reads the GeoJSON and Excel files, computes the LOS grades, and returns the data as a Python dictionary. It doesn't know or care about the web app — it just processes data. app.py calls it whenever data is needed.
+
+templates/index.html
+The HTML skeleton of the dashboard. It defines the structure — the header, side panel, map container, bottom playback controls — but contains no data and no hardcoded numbers. When your browser requests localhost:5000, Flask fills this in and sends it back.
+
+static/css/style.css
+All the visual styling — colours, fonts, sizes, layout, the dark theme, the side panel, the legend, everything that makes it look the way it does. Completely separated from the HTML so you can change the look without touching any logic.
+
+static/js/map.js
+All the interactive behaviour that runs in the browser — the Leaflet map, road polylines, the timeline slider, play/pause, sparklines, popups, the side panel updates, the upload handler. On page load, it calls /api/traffic-data to fetch data, then uses it to draw everything. This is the biggest file and the direct equivalent of the <script> block in your original HTML.
+
+data/road_geometries.geojson
+Your road geometry file — the coordinates that define where each road is drawn on the map. Produced by your get_roads.py script (Script 1). The app reads this but never modifies it unless you upload a new one.
+
+data/Traffic_LOS_Report.xlsx
+Your traffic count data — the hourly vehicle counts per road that the LOS grades are calculated from. The app reads this but never modifies it unless you upload a new one.

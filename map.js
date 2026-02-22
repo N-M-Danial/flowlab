@@ -448,8 +448,9 @@ function applyData(json) {
   MAP_BOUNDS   = json.mapBounds;
 
   // Subtitle
-  document.getElementById('subtitle-text').textContent =
-    `${json.roadCount} Monitored Road Corridors · CCTV AI Camera Data`;
+  document.getElementById('subtitle-text').textContent = isPredictedMode
+    ? `${json.roadCount} Road Corridors · AI Predicted (Next Day)`
+    : `${json.roadCount} Monitored Road Corridors · CCTV AI Camera Data`;
 
   // Compute max volume for stroke-weight scaling
   maxVolume = 0;
@@ -532,4 +533,46 @@ async function handleUpload(input) {
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
+
+
+// ── Prediction mode state ─────────────────────────────────────────────────────
+let isPredictedMode = false;
+
+async function togglePrediction() {
+  isPredictedMode = !isPredictedMode;
+  const btn = document.getElementById('btn-predict');
+
+  if (isPredictedMode) {
+    btn.classList.add('active');
+    btn.textContent = 'Live View';
+    document.body.classList.add('predicted-mode');
+    showLoading('Loading predicted data…');
+    try {
+      const resp = await fetch('/api/predicted-data');
+      const json = await resp.json();
+      if (!json.success) throw new Error(json.error || 'Predicted data unavailable');
+      // Override subtitle to make it clear this is predicted
+      json.dateLabel = 'AI Predicted (Next Day)';
+      applyData(json);
+    } catch (err) {
+      document.getElementById('loading-text').textContent = '⚠ ' + err.message;
+      // Revert toggle state on failure
+      isPredictedMode = false;
+      btn.classList.remove('active');
+      btn.textContent = 'AI Prediction';
+      document.body.classList.remove('predicted-mode');
+      return;
+    }
+    hideLoading();
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = 'AI Prediction';
+    document.body.classList.remove('predicted-mode');
+    // Reload live data
+    await loadData();
+  }
+}
+
+// ──────────────────────────────────────────────────
+
 loadData();

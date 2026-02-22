@@ -22,7 +22,7 @@ DATA_DIR = os.path.join(HERE, "data")
 
 GEOJSON_FILE = os.path.join(DATA_DIR, "road_geometries.geojson")
 XLSX_FILE    = os.path.join(DATA_DIR, "Traffic_LOS_Report.xlsx")
-
+PREDICTED_XLSX_FILE = os.path.join(DATA_DIR, "predicted.xlsx")
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
@@ -41,6 +41,27 @@ def traffic_data():
     try:
         data, coords, bounds, date_label, road_count = process_data.run(
             GEOJSON_FILE, XLSX_FILE
+        )
+        return jsonify(
+            success=True,
+            trafficData=data,
+            roadCoords=coords,
+            mapBounds=bounds,
+            dateLabel=date_label,
+            roadCount=road_count,
+        )
+    except FileNotFoundError as e:
+        return jsonify(success=False, error=str(e)), 404
+    except Exception as e:
+        return jsonify(success=False, error=str(e)), 500
+        
+
+@app.route("/api/predicted-data")
+def predicted_data():
+    """Return predicted next-day traffic data."""
+    try:
+        data, coords, bounds, date_label, road_count = process_data.run(
+            GEOJSON_FILE, PREDICTED_XLSX_FILE
         )
         return jsonify(
             success=True,

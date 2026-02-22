@@ -1,3 +1,5 @@
+![Uploading image.png…]()
+
 # KL Traffic LOS Dashboard
 
 A Flask web app that displays an interactive Level of Service (LOS) map for monitored road corridors in Kuala Lumpur.

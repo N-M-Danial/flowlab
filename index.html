@@ -12,7 +12,7 @@
 
 <div id="header">
   <div>
-    <h1>FlowLab : Level of Service Monitor</h1>
+    <h1>FlowLab v0.1.0 (Alpha)</h1>
     <div class="subtitle" id="subtitle-text">Loading data…</div>
   </div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
@@ -22,8 +22,16 @@
     <div class="sum-badge"><span class="sum-dot" style="background:#ff9100"></span><span id="sum-D" class="sum-count">—</span><span class="sum-grade">D</span></div>
     <div class="sum-badge"><span class="sum-dot" style="background:#ff3d00"></span><span id="sum-E" class="sum-count">—</span><span class="sum-grade">E</span></div>
     <div class="sum-badge"><span class="sum-dot" style="background:#b71c1c"></span><span id="sum-F" class="sum-count">—</span><span class="sum-grade">F</span></div>
+    
+    <!-- Add this before #upload-wrap -->
+    <button id="btn-predict" onclick="togglePrediction()" title="Toggle ML predicted view">
+      AI Prediction
+    </button>
+
+
+
     <div id="upload-wrap">
-      <button id="btn-upload" onclick="document.getElementById('file-input').click()" title="Upload new .xlsx or .geojson">⬆ Upload Data</button>
+      <button id="btn-upload" onclick="document.getElementById('file-input').click()" title="Upload new .xlsx or .geojson">Upload Data</button>
       <input type="file" id="file-input" accept=".xlsx,.geojson,.json" style="display:none" onchange="handleUpload(this)">
     </div>
     <div id="upload-status"></div>

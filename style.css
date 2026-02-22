@@ -17,7 +17,7 @@ body {
   padding:12px 20px; display:flex; align-items:center;
   justify-content:space-between; flex-shrink:0; z-index:1000;
 }
-#header h1 { font-size:15px; font-weight:600; color:#f0f6fc; letter-spacing:0.3px; }
+#header h1 { font-size:25px; font-weight:600; color:#f0f6fc; letter-spacing:0.3px; }
 .subtitle  { font-size:12px; color:#8b949e; margin-top:2px; }
 
 /* ── Map ─────────────────────────────────────────────────────── */
@@ -231,6 +231,16 @@ button.active { background:#1f6feb; border-color:#388bfd; }
 #upload-status.ok  { color:#00c853; }
 #upload-status.err { color:#ff3d00; }
 
+/* ── Predict button ───────────────────────────────────────────── */
+#btn-predict {
+  background: #21262d;
+  border: 1px solid #6e40c9;
+  color: #d2a8ff;
+  font-size: 12px;
+  padding: 4px 10px;
+}
+#btn-predict:hover { background: #2d1f4e; }
+
 /* ── Loading overlay ─────────────────────────────────────────── */
 #loading-overlay {
   position:absolute; inset:0;
@@ -249,3 +259,74 @@ button.active { background:#1f6feb; border-color:#388bfd; }
 }
 @keyframes spin { to { transform:rotate(360deg); } }
 #loading-text { font-size:13px; color:#8b949e; }
+
+
+
+
+
+/* ── Predicted Mode Theme ────────────────────────────────────── */
+body.predicted-mode #header {
+  background: #1a1130;
+  border-bottom-color: #6e40c9;
+}
+
+body.predicted-mode #header h1 {
+  color: #d2a8ff;
+}
+
+body.predicted-mode #bottom-panel {
+  background: #1a1130;
+  border-top-color: #6e40c9;
+}
+
+body.predicted-mode #side-panel {
+  background: #1a1130;
+  border-right-color: #6e40c9;
+}
+
+body.predicted-mode #side-header {
+  border-bottom-color: #6e40c9;
+}
+
+body.predicted-mode #legend,
+body.predicted-mode #peak-panel {
+  background: rgba(26, 17, 48, 0.95);
+  border-color: #6e40c9;
+}
+
+body.predicted-mode #map {
+  background: #160d2e;
+}
+
+/* Pulsing purple banner to make predicted mode unmissable */
+body.predicted-mode #header::after {
+  content: 'AI PREDICTED VIEW (NEXT DAY FORECAST)';
+  display: block;
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  background: #6e40c9;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 14px;
+  border-radius: 0 0 6px 6px;
+  z-index: 1001;
+  animation: predicted-pulse 2s ease-in-out infinite;
+}
+
+@keyframes predicted-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+/* Make #header position:relative so ::after positions correctly */
+body.predicted-mode #header {
+  position: relative;
+}
+
+body.predicted-mode #btn-predict {
+  background: #6e40c9;
+  border-color: #9a6fdb;
+  color: #fff;
+}

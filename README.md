@@ -1,4 +1,4 @@
-![Uploading image.png…]()
+<img width="1913" height="907" alt="image" src="https://github.com/user-attachments/assets/8fa91012-8d6b-44ce-ae34-f063e02fd098" />
 
 # KL Traffic LOS Dashboard
 

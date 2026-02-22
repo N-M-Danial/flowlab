@@ -1,6 +1,6 @@
 <img width="1913" height="907" alt="image" src="https://github.com/user-attachments/assets/8fa91012-8d6b-44ce-ae34-f063e02fd098" />
 
-# KL Traffic LOS Dashboard
+# FlowLab v0.1.0 (Alpha)
 
 A Flask web app that displays an interactive Level of Service (LOS) map for monitored road corridors in Kuala Lumpur.
 
@@ -48,7 +48,7 @@ kl-traffic-los/
 
 ## Uploading New Data
 
-While the dashboard is running, click **⬆ Upload Data** in the top-right corner
+While the dashboard is running, click **Upload Data** in the top-right corner
 to upload a new `.xlsx` or `.geojson` file. The map refreshes automatically —
 no restart needed.
 

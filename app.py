@@ -8,6 +8,7 @@ Then open: http://localhost:5000
 import json
 import os
 import sys
+import csv
 
 from flask import Flask, jsonify, render_template, request
 
@@ -123,11 +124,37 @@ def upload():
         ), 500
 
 
+@app.route("/api/camera-locations")
+def camera_locations():
+    """Return camera locations from CSV."""
+    csv_path = os.path.join(DATA_DIR, "camera_locations.csv")
+    try:
+        cameras = []
+        with open(csv_path, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                lat = row.get("latitude (DD)", "").strip()
+                lng = row.get("longitude (DD)", "").strip()
+                if lat and lng and lat != "NULL" and lng != "NULL":
+                    cameras.append({
+                        "road":      row.get("road", ""),
+                        "camera_id": row.get("camera_id", ""),
+                        "lat":       float(lat),
+                        "lng":       float(lng),
+                    })
+        return jsonify(success=True, cameras=cameras)
+    except FileNotFoundError:
+        return jsonify(success=False, error="camera_locations.csv not found"), 404
+    except Exception as e:
+        return jsonify(success=False, error=str(e)), 500
+
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     print("=" * 55)
     print("  KL Traffic LOS Dashboard")
-    print("  http://localhost:5000")
+    print("  http://localhost:8000")
     print("=" * 55)
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=8000)

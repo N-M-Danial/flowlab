@@ -92,6 +92,7 @@ let playInterval = null;
 let playSpeed    = 800;
 let ROAD_ORDER   = [];
 
+
 // ── Polyline helpers (handles LineString and MultiLineString) ─────────────────
 function isMulti(coords) { return Array.isArray(coords[0][0]); }
 
@@ -576,3 +577,91 @@ async function togglePrediction() {
 // ──────────────────────────────────────────────────
 
 loadData();
+
+// ── Camera locations ──────────────────────────────────────────────────────────
+const cameraLayer = L.layerGroup().addTo(map);
+let camerasVisible = true;
+let cameraMarkers = []; // store refs for fly-to
+
+fetch('/api/camera-locations')
+  .then(r => r.json())
+  .then(json => {
+    if (!json.success) return;
+
+    const dropdown = document.getElementById('camera-dropdown');
+
+    // Group by road
+    const byRoad = {};
+    json.cameras.forEach(cam => {
+      if (!byRoad[cam.road]) byRoad[cam.road] = [];
+      byRoad[cam.road].push(cam);
+    });
+
+    json.cameras.forEach(cam => {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="width:10px;height:10px;border-radius:50%;background:#00b4d8;border:2px solid #fff;box-shadow:0 0 4px rgba(0,180,216,0.8);"></div>`,
+        iconSize: [10, 10], iconAnchor: [5, 5],
+      });
+      const marker = L.marker([cam.lat, cam.lng], { icon })
+        .bindPopup(`<div style="font-size:12px;color:#e6edf3;"><b style="color:#00b4d8">${cam.camera_id}</b><br>${cam.road}</div>`,
+          { className: 'info-popup' })
+        .addTo(cameraLayer);
+      cameraMarkers.push({ cam, marker });
+    });
+
+    document.getElementById('btn-cameras').textContent = `Browse Cameras (${json.cameras.length})`;
+
+    // Build dropdown grouped by road
+    Object.entries(byRoad).forEach(([road, cams]) => {
+      const header = document.createElement('div');
+      header.textContent = road;
+      header.style.cssText = 'padding:6px 12px 4px;font-size:10px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:0.6px;border-top:1px solid #30363d;';
+      dropdown.appendChild(header);
+
+      cams.forEach(cam => {
+        const item = document.createElement('div');
+        item.textContent = cam.camera_id;
+        item.style.cssText = 'padding:6px 16px;font-size:12px;color:#e6edf3;cursor:pointer;transition:background 0.1s;';
+        item.onmouseover = () => item.style.background = '#1c2128';
+        item.onmouseout  = () => item.style.background = '';
+        item.onclick = () => {
+          map.flyTo([cam.lat, cam.lng], 17, { duration: 1 });
+          // show the layer if hidden
+          if (!camerasVisible) {
+            camerasVisible = true;
+            cameraLayer.addTo(map);
+            document.getElementById('btn-cameras').classList.add('active');
+          }
+          // open that marker's popup
+          const found = cameraMarkers.find(m => m.cam.camera_id === cam.camera_id);
+          if (found) found.marker.openPopup();
+          document.getElementById('camera-dropdown').style.display = 'none';
+        };
+        dropdown.appendChild(item);
+      });
+    });
+  });
+
+function toggleCameraDropdown() {
+  const dd = document.getElementById('camera-dropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleCameras() {
+  camerasVisible = !camerasVisible;
+  camerasVisible ? cameraLayer.addTo(map) : map.removeLayer(cameraLayer);
+  document.getElementById('btn-cameras').classList.toggle('active', camerasVisible);
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('#btn-cameras') && !e.target.closest('#camera-dropdown')) {
+    const dd = document.getElementById('camera-dropdown');
+    if (dd) dd.style.display = 'none';
+  }
+});
+
+
+
+//-------------------- PERFECT WORKING VERSION AS OF 25 FEB 2026

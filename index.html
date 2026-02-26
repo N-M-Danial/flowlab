@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlowLab : Level of Service Monitor</title>
+<title>FlowLab</title>
+<link rel="icon" type="image/x-icon" href="/static/flowlab_icon.ico">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="/static/css/style.css"/>
@@ -11,10 +12,12 @@
 <body>
 
 <div id="header">
-  <div>
-    <h1>FlowLab v0.1.0 (Alpha)</h1>
-    <div class="subtitle" id="subtitle-text">Loading data…</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+      <h1><img src="/static/flowlab_logo.png" style="height:50px;vertical-align:middle;margin-right:8px;"></h1>
+      <div class="subtitle" id="subtitle-text">Loading data…</div>
   </div>
+
+
   <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
     <div class="sum-badge"><span class="sum-dot" style="background:#00c853"></span><span id="sum-A" class="sum-count">—</span><span class="sum-grade">A</span></div>
     <div class="sum-badge"><span class="sum-dot" style="background:#7ecb20"></span><span id="sum-B" class="sum-count">—</span><span class="sum-grade">B</span></div>
@@ -23,10 +26,26 @@
     <div class="sum-badge"><span class="sum-dot" style="background:#ff3d00"></span><span id="sum-E" class="sum-count">—</span><span class="sum-grade">E</span></div>
     <div class="sum-badge"><span class="sum-dot" style="background:#b71c1c"></span><span id="sum-F" class="sum-count">—</span><span class="sum-grade">F</span></div>
     
+    <div style="position:relative;">
+      <button id="btn-cameras" onclick="toggleCameraDropdown()" title="Toggle camera locations">
+       Browse Cameras
+      </button>
+      <div id="camera-dropdown" style="
+        display:none; position:absolute; top:calc(100% + 4px); right:0;
+        background:#161b22; border:1px solid #6e40c9; border-radius:6px;
+        min-width:220px; max-height:300px; overflow-y:auto; z-index:2000;
+        box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+      </div>
+    </div>
+
+
+
     <!-- Add this before #upload-wrap -->
     <button id="btn-predict" onclick="togglePrediction()" title="Toggle ML predicted view">
       AI Prediction
     </button>
+
+
 
 
 
@@ -112,3 +131,6 @@
 <script src="/static/js/map.js"></script>
 </body>
 </html>
+
+
+<!-- PERFECT WORKING VERSION AS OF 25 Feb 2026 -->

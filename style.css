@@ -13,12 +13,31 @@ body {
 
 /* ── Header ─────────────────────────────────────────────────── */
 #header {
-  background:#161b22; border-bottom:1px solid #30363d;
-  padding:12px 20px; display:flex; align-items:center;
-  justify-content:space-between; flex-shrink:0; z-index:1000;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background:#161b22; 
+  border-bottom:1px solid #30363d;
+  padding:12px 20px; 
+  display:flex; 
+  align-items:center;
+  justify-content:space-between; 
+  flex-shrink:0; 
+  z-index:1000;
 }
-#header h1 { font-size:25px; font-weight:600; color:#f0f6fc; letter-spacing:0.3px; }
-.subtitle  { font-size:12px; color:#8b949e; margin-top:2px; }
+
+#header h1 { 
+  font-family: inherit; /* This makes the H1 use the header font */
+  font-size:25px; 
+  font-weight:600; 
+  color:#f0f6fc; 
+  letter-spacing:0.3px; 
+}
+
+.subtitle { 
+  font-family: inherit;
+  font-size:12px; 
+  color:#8b949e; 
+  margin-top:2px; 
+}
 
 /* ── Map ─────────────────────────────────────────────────────── */
 #map { flex:1; background:#1a1f2e; height:100%; }
@@ -216,30 +235,75 @@ button.active { background:#1f6feb; border-color:#388bfd; }
 .leg-txt { font-size:9px; color:#8b949e; white-space:nowrap; }
 
 /* ── Upload button ───────────────────────────────────────────── */
-#upload-wrap { display:flex; align-items:center; gap:6px; }
+#upload-wrap { 
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+}
 
 #btn-upload {
-  background:#21262d; border:1px solid #388bfd; color:#58a6ff;
-  font-size:12px; padding:4px 10px;
+  background: #21262d; 
+  border: 1px solid #8b949e; /* Changed from blue to grey */
+  color: #8b949e;            /* Changed from blue to grey */
+  font-size: 12px; 
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-#btn-upload:hover { background:#1f6feb; color:#fff; }
+
+#btn-upload:hover { 
+  background: #30363d;       /* Neutral dark grey hover */
+  border-color: #c9d1d9;     /* Lighter grey border on hover */
+  color: #c9d1d9;            /* Lighter grey text on hover */
+}
 
 #upload-status {
-  font-size:11px; color:#8b949e; max-width:180px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-size: 11px; 
+  color: #8b949e; 
+  max-width: 180px;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
 }
-#upload-status.ok  { color:#00c853; }
-#upload-status.err { color:#ff3d00; }
+
+/* Kept these functional colors as they provide clear feedback */
+#upload-status.ok  { color: #00c853; }
+#upload-status.err { color: #ff3d00; }
+
+
+/*--- Cameras Dropdown ----------------------------*/
+#btn-cameras {
+  background: #21262d;
+  border: 1px solid #d1d5db; /* Light silver/off-white */
+  color: #d1d5db;            /* Light silver/off-white */
+  font-size: 12px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#btn-cameras:hover { 
+  background: #30363d;       /* Slightly lighter background */
+  border-color: #f3f4f6;     /* Brighter silver on hover */
+  color: #f3f4f6;            /* Brighter silver on hover */
+}
 
 /* ── Predict button ───────────────────────────────────────────── */
 #btn-predict {
   background: #21262d;
-  border: 1px solid #6e40c9;
-  color: #d2a8ff;
+  border: 1px solid #8b949e; /* Medium grey */
+  color: #8b949e;            /* Medium grey */
   font-size: 12px;
   padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Makes the hover effect smooth */
 }
-#btn-predict:hover { background: #2d1f4e; }
+
+#btn-predict:hover { 
+  background: #30363d;       /* Darker grey background */
+  border-color: #c9d1d9;     /* Lighter grey border on hover */
+  color: #c9d1d9;            /* Lighter grey text on hover */
+}
 
 /* ── Loading overlay ─────────────────────────────────────────── */
 #loading-overlay {
@@ -330,3 +394,6 @@ body.predicted-mode #btn-predict {
   border-color: #9a6fdb;
   color: #fff;
 }
+
+
+/* PERFECT WORKING VERSION AS OF 25 FEB 2026 */

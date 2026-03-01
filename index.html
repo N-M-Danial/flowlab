@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlowLab</title>
-<link rel="icon" type="image/x-icon" href="/static/flowlab_icon.ico">
+<title>Nerve</title>
+<link rel="icon" type="image/x-icon" href="/static/nerve_icon.ico">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="/static/css/style.css"/>
@@ -13,7 +13,7 @@
 
 <div id="header">
   <div style="display:flex;align-items:center;gap:12px;">
-      <h1><img src="/static/flowlab_logo.png" style="height:50px;vertical-align:middle;margin-right:8px;"></h1>
+      <h1><img src="/static/nerve_logo.png" style="height:50px;vertical-align:middle;margin-right:8px;"></h1>
       <div class="subtitle" id="subtitle-text">Loading data…</div>
   </div>
 
@@ -50,7 +50,7 @@
 
 
     <div id="upload-wrap">
-      <button id="btn-upload" onclick="document.getElementById('file-input').click()" title="Upload new .xlsx or .geojson">Upload Data</button>
+      <button id="btn-upload" onclick="document.getElementById('file-input').click()" title="Upload new .xlsx or .geojson">Download Report</button>
       <input type="file" id="file-input" accept=".xlsx,.geojson,.json" style="display:none" onchange="handleUpload(this)">
     </div>
     <div id="upload-status"></div>

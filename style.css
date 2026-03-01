@@ -396,4 +396,23 @@ body.predicted-mode #btn-predict {
 }
 
 
+/* ── Marching Ants Animation ────────────────────────────────── */
+
+/* 1. Define the movement */
+@keyframes flow {
+  from {
+    stroke-dashoffset: 20;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 2. Apply it to the map lines */
+path.leaflet-interactive {
+  /* This ensures the animation only runs when a dashArray is present */
+  stroke-dashoffset: 0;
+  animation: flow 1s linear infinite;
+}
+
 /* PERFECT WORKING VERSION AS OF 25 FEB 2026 */

@@ -25,6 +25,41 @@ const map = L.map('map', { zoomControl:false });
 
 // Try tile providers in order
 const TILE_PROVIDERS = [
+
+
+  /*
+
+  {
+    // Ultra-clean Dark Mode for Dashboards
+    url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+    opts: { 
+      attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 20 
+    }
+  },
+
+  
+
+  {
+    // High-resolution Satellite Imagery
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    opts: { 
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxZoom: 18 
+    }
+  },
+
+  {
+    // Voyager Blue style from CartoDB
+    url:  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    opts: { 
+      attribution: '&copy; OpenStreetMap &copy; CARTO', 
+      subdomains: 'abcd', 
+      maxZoom: 19 
+    }
+  },
+
+  */
   {
     url:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     opts: { attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19 }
@@ -152,7 +187,14 @@ function buildMapLayers() {
   }
   roadLayers = {};
 
-  const DEFAULT_STYLE = { color:'#00c853', weight:5, opacity:0.85, lineCap:'round', lineJoin:'round' };
+  const DEFAULT_STYLE = {
+    color:'#00c853',
+    weight:5,
+    opacity:0.85,
+    lineCap:'round',
+    lineJoin:'round',
+    dashArray: '10, 10'
+    };
   for (const road in ROAD_COORDS) {
     const layer = makePolyline(ROAD_COORDS[road], { ...DEFAULT_STYLE });
     layer.addTo(map);
@@ -282,6 +324,7 @@ function updateMap(h) {
 
 // ── Info popup ────────────────────────────────────────────────────────────────
 let infoPopup = null;
+let _selectingRoad = false; // guard: prevents closeInfo() from firing during selectRoad()
 
 function buildPopupHTML(road, d) {
   if (!d) return '<div style="color:#8b949e;font-size:12px;">No data</div>';
@@ -309,8 +352,14 @@ function buildPopupHTML(road, d) {
 }
 
 function selectRoad(road, latlng) {
+  // Raise guard BEFORE map.closePopup() so the 'remove' event on the old
+  // popup does not call closeInfo() and wipe selectedRoad / infoPopup while
+  // we are in the middle of setting up the new selection.
+  _selectingRoad = true;
+
   selectedRoad = road;
-  map.closePopup();
+  map.closePopup(); // fires 'remove' on old popup → closeInfo() is suppressed by guard
+
   for (const r in roadLayers)
     setPolyStyle(roadLayers[r], { opacity: r===road ? 1.0 : 0.4 });
   document.querySelectorAll('.road-row').forEach(r => r.classList.remove('active'));
@@ -336,6 +385,9 @@ function selectRoad(road, latlng) {
     .setContent(buildPopupHTML(road, d))
     .openOn(map);
   infoPopup.on('remove', () => closeInfo());
+
+  // Lower guard only after the new popup is fully set up
+  _selectingRoad = false;
 }
 
 function updateInfoPanel(road, h) {
@@ -345,6 +397,10 @@ function updateInfoPanel(road, h) {
 }
 
 function closeInfo() {
+  // If selectRoad() is currently running, it intentionally closed the old popup
+  // to replace it — do NOT wipe the new selection state.
+  if (_selectingRoad) return;
+
   selectedRoad = null;
   infoPopup = null;
   for (const r in roadLayers) setPolyStyle(roadLayers[r], { opacity:0.85 });
@@ -451,7 +507,8 @@ function applyData(json) {
   // Subtitle
   document.getElementById('subtitle-text').textContent = isPredictedMode
     ? `${json.roadCount} Road Corridors · AI Predicted (Next Day)`
-    : `${json.roadCount} Monitored Road Corridors · CCTV AI Camera Data`;
+   // : `${json.roadCount} Monitored Road Corridors · CCTV AI Camera Data`;
+      : `${json.roadCount} Monitored Road Corridors · ${json.dateLabel}`;
 
   // Compute max volume for stroke-weight scaling
   maxVolume = 0;
@@ -606,6 +663,8 @@ fetch('/api/camera-locations')
       const marker = L.marker([cam.lat, cam.lng], { icon })
         .bindPopup(`<div style="font-size:12px;color:#e6edf3;"><b style="color:#00b4d8">${cam.camera_id}</b><br>${cam.road}</div>`,
           { className: 'info-popup' })
+        .on('click', () => { _selectingRoad = true; })
+        .on('popupopen', () => { _selectingRoad = false; })
         .addTo(cameraLayer);
       cameraMarkers.push({ cam, marker });
     });
@@ -633,9 +692,15 @@ fetch('/api/camera-locations')
             cameraLayer.addTo(map);
             document.getElementById('btn-cameras').classList.add('active');
           }
-          // open that marker's popup
+          // Open the camera marker popup. Because Leaflet uses a single popup
+          // slot, openPopup() will displace and fire 'remove' on any open road
+          // info popup. Raise the guard so closeInfo() knows not to wipe the
+          // road selection state — the user is just viewing a camera, not
+          // deselecting a road.
+          _selectingRoad = true;
           const found = cameraMarkers.find(m => m.cam.camera_id === cam.camera_id);
           if (found) found.marker.openPopup();
+          _selectingRoad = false;
           document.getElementById('camera-dropdown').style.display = 'none';
         };
         dropdown.appendChild(item);
